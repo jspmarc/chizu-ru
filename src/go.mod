@@ -1,3 +1,3 @@
-module github.com/jspmarc/chizu-ru
+module chizu-ru
 
 go 1.16
