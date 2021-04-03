@@ -6,8 +6,8 @@ import (
 )
 
 type gcs struct {
-	latitude  float64 // N
-	longitude float64 // W
+	latitude  float64 // N, satuan derajat
+	longitude float64 // W, satuan derajat
 }
 
 // Node ADT untuk sudut graf
@@ -36,17 +36,10 @@ func haversine(rad float64) float64 {
 	return math.Pow(math.Sin(rad/2), 2)
 }
 
-func cartesianDistance(v1 *Node, v2 *Node) float64 {
-	xDist := v1.pos.longitude - v2.pos.longitude
-	yDist := v1.pos.latitude - v2.pos.latitude
-
-	return math.Sqrt(math.Pow(xDist, 2) + math.Pow(yDist, 2))
-}
-
 // Distance fungsi untuk menghitung jarak antara dua buah sudut dengan
-// menggunakan persamaan haversine
+// menggunakan persamaan great-sphecial distance. Hasilnya dalam kilometer
 func Distance(v1 *Node, v2 *Node) float64 {
-	r := 6371.0
+	r := 6371.0 // jari-jari bumi
 	v1lat := toRadian(v1.pos.latitude)
 	v1lon := toRadian(v1.pos.longitude)
 	v2lat := toRadian(v2.pos.latitude)
