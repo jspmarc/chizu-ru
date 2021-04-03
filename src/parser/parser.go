@@ -20,7 +20,6 @@ import (
 	"chizu-ru/graph"
 	"chizu-ru/node"
 	"fmt"
-	"math"
 	"os"
 	"strconv"
 	"strings"
@@ -69,13 +68,11 @@ func Parse() (*graph.Graph, error) {
 	for i := 0; i < nVertex; i++ {
 		splitted := strings.Split(f[ctr], " ")
 		for j := i; j < nVertex; j++ {
-			var weight float64
-			if splitted[j] == "-" {
-				weight = math.Inf(1)
+			if splitted[j] == "0" {
+				continue
 			} else {
-				weight, _ = strconv.ParseFloat(splitted[j], 64)
+				g.AddEdge(vertices[i], vertices[j])
 			}
-			g.AddEdge(vertices[i], vertices[j], weight)
 		}
 		ctr++
 	}

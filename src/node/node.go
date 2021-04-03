@@ -45,8 +45,8 @@ func Distance(v1 *Node, v2 *Node) float64 {
 	v2lat := toRadian(v2.pos.latitude)
 	v2lon := toRadian(v2.pos.longitude)
 
-	h := haversine(v2lat - v1lat) +
-		math.Cos(v1lat)*math.Cos(v2lat)*haversine(v2lon - v1lon)
+	h := haversine(v2lat-v1lat) +
+		math.Cos(v1lat)*math.Cos(v2lat)*haversine(v2lon-v1lon)
 
 	return 2 * r * math.Asin(math.Sqrt(h))
 }
