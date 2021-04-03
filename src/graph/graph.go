@@ -10,18 +10,14 @@ import (
 type vertex = node.Node
 
 // graph ADT graf dengan adjacency matrix
-// Disertai map dengan pointer ke vertex sebagai value dan info vertex (string)
-// sebagai key untuk mendapatkan list vertex yang dimiliki graf
 type graph struct {
 	adjMatrix map[*vertex]map[*vertex]float64
-	vertices map[string]*vertex
 }
 
 // New fungsi untuk membuat sebuah graf baru
 func New() *graph {
 	g := new(graph)
 	g.adjMatrix = make(map[*vertex]map[*vertex]float64)
-	g.vertices = make(map[string]*vertex)
 
 	return g
 }
@@ -33,17 +29,12 @@ func (g *graph) AddVertex(v *vertex) {
 		return
 	}
 
-	if _, exists := g.vertices[v.GetInfo()]; exists {
-		return
-	}
-
 	g.adjMatrix[v] = make(map[*vertex]float64)
 	for k := range g.adjMatrix {
 		g.adjMatrix[v][k] = math.Inf(1)
 		g.adjMatrix[k][v] = math.Inf(1)
 	}
 	g.adjMatrix[v][v] = 0
-	g.vertices[v.GetInfo()] = v
 }
 
 // AddEdge fungsi untuk menambahkan sisi dari sudut src ke sudut dst

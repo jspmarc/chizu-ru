@@ -3,6 +3,7 @@ package main
 import (
 	"chizu-ru/graph"
 	"chizu-ru/node"
+	"chizu-ru/parser"
 	"fmt"
 	//"chizu-ru/osm"
 )
@@ -22,4 +23,5 @@ func main() {
 
 	fmt.Println(node.Distance(newYork, london))
 	//osm.Search("name", "Institut Teknologi Bandung", "Jawa Barat", 25)
+	parser.Parse()
 }
