@@ -17,9 +17,10 @@ package parser
 import (
 	"bufio"
 	"bytes"
-	//"chizu-ru/graph"
+	"chizu-ru/graph"
 	"chizu-ru/node"
 	"fmt"
+	"math"
 	"os"
 	"strconv"
 	"strings"
@@ -29,7 +30,7 @@ type vertex = node.Node
 
 // Parse fungsi untuk parsing file menjadi graf kemudian pointer graf akan
 // dikembalikan
-func Parse() {
+func Parse() (*graph.Graph, error) {
 	scanner := bufio.NewScanner(os.Stdin)
 	scanner.Scan()
 	input := scanner.Text()
@@ -39,7 +40,7 @@ func Parse() {
 	file, ferr := os.Open(fnameBuffer.String())
 
 	if ferr != nil {
-		panic(ferr)
+		return nil, ferr
 	}
 
 	scanner1 := bufio.NewScanner(file)
@@ -54,17 +55,30 @@ func Parse() {
 	vertices := make([]*vertex, 0)
 
 	nVertex, _ := strconv.Atoi(f[0])
-
-	for ctr := 0; ctr < nVertex; ctr++ {
-		splitted := strings.Split(f[ctr+1], " ")
+	ctr := 1
+	for ctr <= nVertex {
+		splitted := strings.Split(f[ctr], ",")
 		latitude, _ := strconv.ParseFloat(splitted[1], 64)
 		longitude, _ := strconv.ParseFloat(splitted[2], 64)
 
 		vertices = append(vertices, node.New(splitted[0], latitude, longitude))
+		ctr++
 	}
 
-	fmt.Println(vertices)
-	for _, v := range vertices {
-		fmt.Println(v)
+	g := graph.New()
+	for i := 0; i < nVertex; i++ {
+		splitted := strings.Split(f[ctr], " ")
+		for j := i; j < nVertex; j++ {
+			var weight float64
+			if splitted[j] == "-" {
+				weight = math.Inf(1)
+			} else {
+				weight, _ = strconv.ParseFloat(splitted[j], 64)
+			}
+			g.AddEdge(vertices[i], vertices[j], weight)
+		}
+		ctr++
 	}
+
+	return g, nil
 }

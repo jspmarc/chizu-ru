@@ -10,13 +10,13 @@ import (
 type vertex = node.Node
 
 // graph ADT graf dengan adjacency matrix
-type graph struct {
+type Graph struct {
 	adjMatrix map[*vertex]map[*vertex]float64
 }
 
 // New fungsi untuk membuat sebuah graf baru
-func New() *graph {
-	g := new(graph)
+func New() *Graph {
+	g := new(Graph)
 	g.adjMatrix = make(map[*vertex]map[*vertex]float64)
 
 	return g
@@ -24,7 +24,7 @@ func New() *graph {
 
 // AddVertex fungsi untuk menambahkan sebuah sudut ke graf
 // Jika sudut sudah ada, tidak akan dilakukan apa-apa
-func (g *graph) AddVertex(v *vertex) {
+func (g *Graph) AddVertex(v *vertex) {
 	if _, exists := g.adjMatrix[v]; exists {
 		return
 	}
@@ -39,7 +39,7 @@ func (g *graph) AddVertex(v *vertex) {
 
 // AddEdge fungsi untuk menambahkan sisi dari sudut src ke sudut dst
 // dengan bobot weight
-func (g *graph) AddEdge(src *vertex, dst *vertex, weight float64) {
+func (g *Graph) AddEdge(src *vertex, dst *vertex, weight float64) {
 	g.AddVertex(src)
 	g.AddVertex(dst)
 
@@ -47,7 +47,7 @@ func (g *graph) AddEdge(src *vertex, dst *vertex, weight float64) {
 	g.adjMatrix[dst][src] = weight
 }
 
-func (g *graph) Print() {
+func (g *Graph) Print() {
 	for k, v := range g.adjMatrix {
 		fmt.Print(*k)
 		fmt.Println(":")
