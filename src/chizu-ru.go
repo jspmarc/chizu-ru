@@ -23,8 +23,8 @@ func main() {
 
 	fmt.Println(node.Distance(newYork, london))
 	//osm.Search("name", "Institut Teknologi Bandung", "Jawa Barat", 25)
-	parser.Parse()
-	res, jarak, _ := g.AStar("hadeh", "anjay")
+	g, _ = parser.Parse()
+	res, jarak, _ := g.AStar("Arad", "Bucharest")
 	for _, e := range res {
 		fmt.Println(*e)
 	}

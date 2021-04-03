@@ -10,7 +10,7 @@ import (
 
 type vertex = node.Node
 
-// graph ADT graf dengan adjacency matrix
+// Graph ADT graf dengan adjacency matrix
 type Graph struct {
 	adjMatrix map[*vertex]map[*vertex]bool
 }
@@ -92,14 +92,10 @@ func (g *Graph) AStar(src string, dest string) ([]*vertex, float64, error) {
 		pq := prioqueue.New()
 		for k := range g.adjMatrix[srcVert] {
 			if !hasVisited[k] && g.adjMatrix[curVert][k] {
-				if k != destVert {
-					gn = node.Distance(srcVert, curVert)
-					hn = node.Distance(curVert, destVert)
-					fn = gn + hn
-					pq.Enqueue(k, fn)
-				} else { // hacky
-					pq.Enqueue(k, -1)
-				}
+				gn = node.Distance(srcVert, k)
+				hn = node.Distance(k, destVert)
+				fn = gn + hn
+				pq.Enqueue(k, fn)
 			}
 		}
 

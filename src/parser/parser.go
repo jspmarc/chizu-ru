@@ -51,16 +51,16 @@ func Parse() (*graph.Graph, error) {
 	defer file.Close()
 
 	// buat nyimpen sudut yang udah dibuat, jadi tinggal tambah ke graf
-	vertices := make([]*vertex, 0)
-
 	nVertex, _ := strconv.Atoi(f[0])
+	vertices := make([]*vertex, nVertex)
+
 	ctr := 1
 	for ctr <= nVertex {
 		splitted := strings.Split(f[ctr], ",")
 		latitude, _ := strconv.ParseFloat(splitted[1], 64)
 		longitude, _ := strconv.ParseFloat(splitted[2], 64)
 
-		vertices = append(vertices, node.New(splitted[0], latitude, longitude))
+		vertices[ctr - 1] = node.New(splitted[0], latitude, longitude)
 		ctr++
 	}
 
