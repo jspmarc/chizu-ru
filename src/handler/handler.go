@@ -44,3 +44,9 @@ func ProgramHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 }
+
+func AStar(w http.ResponseWriter, r *http.Request) {
+}
+
+func AStar(w http.ResponseWriter, r *http.Request) {
+}
