@@ -5,6 +5,8 @@ import (
 	"chizu-ru/node"
 	"chizu-ru/parser"
 	"fmt"
+	"log"
+	"net/http"
 	//"chizu-ru/osm"
 )
 
@@ -29,4 +31,12 @@ func main() {
 		fmt.Println(*e)
 	}
 	fmt.Println(jarak)
+
+	mux := http.NewServeMux()
+	mux.HandleFunc("/", homeHandler)
+	mux.HandleFunc("/About", aboutHandler)
+
+	log.Println("Starting web port on 8080")
+	werr := http.ListenAndServe(":8080", mux)
+	log.Fatal(werr)
 }
