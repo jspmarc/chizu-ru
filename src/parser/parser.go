@@ -16,10 +16,8 @@ package parser
 
 import (
 	"bufio"
-	"bytes"
 	"chizu-ru/graph"
 	"chizu-ru/node"
-	"fmt"
 	"os"
 	"strconv"
 	"strings"
@@ -29,14 +27,16 @@ type vertex = node.Node
 
 // Parse fungsi untuk parsing file menjadi graf kemudian pointer graf akan
 // dikembalikan
-func Parse() (*graph.Graph, error) {
-	scanner := bufio.NewScanner(os.Stdin)
-	scanner.Scan()
-	input := scanner.Text()
+func Parse(pathToFile string) (*graph.Graph, error) {
+	//scanner := bufio.NewScanner(os.Stdin)
+	//scanner.Scan()
+	//input := scanner.Text()
 
-	fnameBuffer := new(bytes.Buffer)
-	fmt.Fprintf(fnameBuffer, "../test/%s", input)
-	file, ferr := os.Open(fnameBuffer.String())
+	//fnameBuffer := new(bytes.Buffer)
+	//fmt.Fprintf(fnameBuffer, "../test/%s", input)
+	//file, ferr := os.Open(fnameBuffer.String())
+
+	file, ferr := os.Open(pathToFile)
 
 	if ferr != nil {
 		return nil, ferr

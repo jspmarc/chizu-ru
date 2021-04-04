@@ -54,3 +54,11 @@ func Distance(v1 *Node, v2 *Node) float64 {
 func (v *Node) GetInfo() string {
 	return v.info
 }
+
+func (v *Node) GetLat() float64 {
+	return v.pos.latitude
+}
+
+func (v *Node) GetLong() float64 {
+	return v.pos.longitude
+}
