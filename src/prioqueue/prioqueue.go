@@ -1,3 +1,5 @@
+// Package prioqueue lirary priority queue dengan elementnya adalah pointer
+// sudut pada graf. Bisa ada beberapa elemen yang sama dengan priority berbeda.
 package prioqueue
 
 import (
@@ -56,4 +58,35 @@ func (pq *PrioQueue) Dequeue() (*node.Node, error) {
 
 func (pq *PrioQueue) IsEmpty() bool {
 	return len(pq.elements) == 0
+}
+
+// ContainsLEQ memeriksa apakah di queue sudah ada elemen yang sama dengan
+// priority lebih rendah atau sama
+func (pq *PrioQueue) ContainsLEQ(n *node.Node, prio float64) bool {
+	for _, e := range pq.elements {
+		if e.info == n && e.priority <= prio {
+			return true
+		}
+	}
+
+	return false
+}
+
+// RemoveEl menghapus elemen n dari queue
+func (pq *PrioQueue) RemoveEl(n *node.Node) {
+	tmp := make([]*queueElement, 0)
+	for i, e := range pq.elements {
+		if e.info == n {
+			tmp = append(tmp, pq.elements[:i]...)
+			tmp = append(tmp, pq.elements[i+1:]...)
+			pq.elements = tmp
+		}
+	}
+}
+
+// Clear mengosongkan queue
+func (pq *PrioQueue) Clear() {
+	for !pq.IsEmpty() {
+		pq.Dequeue()
+	}
 }

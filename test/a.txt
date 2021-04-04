@@ -10,7 +10,7 @@ Lugoj,45.691,21.903
 Mehadia,44.904,22.365
 Drobeta,44.639,22.659
 Cralova,44.319,23.794
-Rimnicu Vilcea,46.000,24.369
+Rimnicu Vilcea,45.099,24.369
 Pitesti,44.856,24.869
 Giurgiu,43.905,25.969
 Urziceni,44.718,26.645

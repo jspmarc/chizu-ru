@@ -79,8 +79,11 @@ func (g *Graph) AStar(src string, dest string) ([]*vertex, float64, error) {
 
 	prevVerts := make(map[*vertex]*vertex)
 	vertCostFromSrc := make(map[*vertex]float64)
+	toVisit := prioqueue.New()
+
 	vertCostFromSrc[srcVert] = 0
 	prevVerts[srcVert] = nil
+	toVisit.Enqueue(srcVert, 0)
 
 	// nyari tetangga
 	var fn, gn, hn float64
@@ -88,53 +91,46 @@ func (g *Graph) AStar(src string, dest string) ([]*vertex, float64, error) {
 	gn = 0
 	hn = 0
 	var curVert *vertex = nil
-	pq := prioqueue.New()
-	pq.Enqueue(srcVert, 0)
 
-	for !pq.IsEmpty() {
+	for !toVisit.IsEmpty() {
 		var err error
-		curVert, err = pq.Dequeue()
+		curVert, err = toVisit.Dequeue()
 		if err != nil {
 			return nil, 0, err
 		}
 
-		fmt.Println(*curVert)
-		for k, v := range g.adjMatrix[curVert] {
-			if v {
-				if k == destVert {
-					for !pq.IsEmpty() {
-						pq.Dequeue()
-					}
-					break
-				}
+		for adj, isAdj := range g.adjMatrix[curVert] {
+			if isAdj {
 				// hitung gn
-				gn = vertCostFromSrc[curVert] + node.Distance(curVert, k)
+				gn = vertCostFromSrc[curVert] + node.Distance(curVert, adj)
 				// jadiin gn sbg cost dari source vertex ke k
-				if _, exists := vertCostFromSrc[k]; !exists {
-					vertCostFromSrc[k] = gn
-					prevVerts[k] = curVert
+				if cost, exists := vertCostFromSrc[adj]; !exists {
+					vertCostFromSrc[adj] = gn
+					prevVerts[adj] = curVert
 				} else {
-					if gn < vertCostFromSrc[k] {
+					if gn < cost {
 						// update jarak dari source, kalo ternyata bisa lebih
 						// kecil. Update juga parent vertex-nya
-						vertCostFromSrc[k] = gn
-						prevVerts[k] = curVert
+						vertCostFromSrc[adj] = gn
+						prevVerts[adj] = curVert
 					}
 				}
+				// kalo ketemu deestiation vertex, stop
+				if adj == destVert {
+					toVisit.Clear()
+					break
+				}
 				// hitung hn
-				hn = node.Distance(k, destVert)
+				hn = node.Distance(adj, destVert)
 				// hitung fn
 				fn = gn + hn
 
-				fmt.Println("\t", k.GetInfo(), gn, "+", hn, "=", fn)
-				pq.Enqueue(k, fn)
-				tempQ := *pq
-				fmt.Print("\t[")
-				for !tempQ.IsEmpty() {
-					e, _ := tempQ.Dequeue()
-					fmt.Print(e.GetInfo(), " ")
+				if toVisit.ContainsLEQ(adj, fn) {
+					continue
 				}
-				fmt.Println("]")
+
+				toVisit.RemoveEl(adj)
+				toVisit.Enqueue(adj, fn)
 			}
 		}
 	}
@@ -142,11 +138,9 @@ func (g *Graph) AStar(src string, dest string) ([]*vertex, float64, error) {
 	curVert = destVert
 	for curVert != nil {
 		prevVert := prevVerts[curVert]
-		if prevVert == nil {
-			break
-		}
 		ret = append(ret, curVert)
 		curVert = prevVert
 	}
+
 	return ret, vertCostFromSrc[destVert], nil
 }
