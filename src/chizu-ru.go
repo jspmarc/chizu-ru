@@ -2,6 +2,7 @@ package main
 
 import (
 	"chizu-ru/graph"
+	"chizu-ru/handler"
 	"chizu-ru/node"
 	"chizu-ru/parser"
 	"fmt"
@@ -33,8 +34,8 @@ func main() {
 	fmt.Println(jarak)
 
 	mux := http.NewServeMux()
-	mux.HandleFunc("/", homeHandler)
-	mux.HandleFunc("/About", aboutHandler)
+	mux.HandleFunc("/", handler.HomeHandler)
+	mux.HandleFunc("/Program", handler.ProgramHandler)
 
 	log.Println("Starting web port on 8080")
 	werr := http.ListenAndServe(":8080", mux)
