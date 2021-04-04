@@ -22,21 +22,26 @@ func New() *PrioQueue {
 }
 
 func (pq *PrioQueue) Enqueue(n *node.Node, prio float64) {
+	a := new(queueElement)
+	a.info = n
+	a.priority = prio
+
 	if pq.IsEmpty() {
-		pq.elements = append(pq.elements, &queueElement{n, prio})
+		pq.elements = append(pq.elements, a)
 		return
 	}
 
 	for i, el := range pq.elements {
 		if el.priority > prio {
-			temp := pq.elements[:i]
-			temp = append(temp, &queueElement{n, prio})
+			temp := make([]*queueElement, 0)
+			temp = append(temp, pq.elements[:i]...)
+			temp = append(temp, a)
 			pq.elements = append(temp, pq.elements[i:]...)
 			return
 		}
 	}
 
-	pq.elements = append(pq.elements, &queueElement{n, prio})
+	pq.elements = append(pq.elements, a)
 }
 
 func (pq *PrioQueue) Dequeue() (*node.Node, error) {

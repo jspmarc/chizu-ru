@@ -22,7 +22,7 @@ func main() {
 	london := node.New("London", 51.5074, 0.1278)
 
 	fmt.Println(node.Distance(newYork, london))
-	//osm.Search("name", "Institut Teknologi Bandung", "Jawa Barat", 25)
+	// osm.Search("name", "Institut Teknologi Bandung", "Jawa Barat", 25)
 	g, _ = parser.Parse()
 	res, jarak, _ := g.AStar("Arad", "Bucharest")
 	for _, e := range res {

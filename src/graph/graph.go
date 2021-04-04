@@ -77,36 +77,76 @@ func (g *Graph) AStar(src string, dest string) ([]*vertex, float64, error) {
 		return nil, 0, errors.New("sudut tujuan atau asal belum ada")
 	}
 
-	hasVisited := make(map[*vertex]bool)
-	for k := range g.adjMatrix {
-		hasVisited[k] = false
-	}
+	prevVerts := make(map[*vertex]*vertex)
+	vertCostFromSrc := make(map[*vertex]float64)
+	vertCostFromSrc[srcVert] = 0
+	prevVerts[srcVert] = nil
 
 	// nyari tetangga
 	var fn, gn, hn float64
-	curVert := srcVert
-	for curVert != destVert {
-		hasVisited[curVert] = true
-		ret = append(ret, curVert)
+	fn = 0
+	gn = 0
+	hn = 0
+	var curVert *vertex = nil
+	pq := prioqueue.New()
+	pq.Enqueue(srcVert, 0)
 
-		pq := prioqueue.New()
-		for k := range g.adjMatrix[srcVert] {
-			if !hasVisited[k] && g.adjMatrix[curVert][k] {
-				gn = node.Distance(srcVert, k)
-				hn = node.Distance(k, destVert)
-				fn = gn + hn
-				pq.Enqueue(k, fn)
-			}
-		}
-
-		nextVert, err := pq.Dequeue()
+	for !pq.IsEmpty() {
+		var err error
+		curVert, err = pq.Dequeue()
 		if err != nil {
 			return nil, 0, err
 		}
 
-		curVert = nextVert
+		fmt.Println(*curVert)
+		for k, v := range g.adjMatrix[curVert] {
+			if v {
+				if k == destVert {
+					for !pq.IsEmpty() {
+						pq.Dequeue()
+					}
+					break
+				}
+				// hitung gn
+				gn = vertCostFromSrc[curVert] + node.Distance(curVert, k)
+				// jadiin gn sbg cost dari source vertex ke k
+				if _, exists := vertCostFromSrc[k]; !exists {
+					vertCostFromSrc[k] = gn
+					prevVerts[k] = curVert
+				} else {
+					if gn < vertCostFromSrc[k] {
+						// update jarak dari source, kalo ternyata bisa lebih
+						// kecil. Update juga parent vertex-nya
+						vertCostFromSrc[k] = gn
+						prevVerts[k] = curVert
+					}
+				}
+				// hitung hn
+				hn = node.Distance(k, destVert)
+				// hitung fn
+				fn = gn + hn
+
+				fmt.Println("\t", k.GetInfo(), gn, "+", hn, "=", fn)
+				pq.Enqueue(k, fn)
+				tempQ := *pq
+				fmt.Print("\t[")
+				for !tempQ.IsEmpty() {
+					e, _ := tempQ.Dequeue()
+					fmt.Print(e.GetInfo(), " ")
+				}
+				fmt.Println("]")
+			}
+		}
 	}
 
-	ret = append(ret, destVert)
-	return ret, fn, nil
+	curVert = destVert
+	for curVert != nil {
+		prevVert := prevVerts[curVert]
+		if prevVert == nil {
+			break
+		}
+		ret = append(ret, curVert)
+		curVert = prevVert
+	}
+	return ret, vertCostFromSrc[destVert], nil
 }
