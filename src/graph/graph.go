@@ -74,7 +74,7 @@ func (g *Graph) AStar(src string, dest string) ([]*vertex, float64, error) {
 	}
 
 	if srcVert == nil || destVert == nil {
-		return nil, 0, errors.New("sudut tujuan atau asal belum ada")
+		return nil, 0, errors.New("EdgeNotFound")
 	}
 
 	prevVerts := make(map[*vertex]*vertex)
@@ -96,7 +96,7 @@ func (g *Graph) AStar(src string, dest string) ([]*vertex, float64, error) {
 		var err error
 		curVert, err = toVisit.Dequeue()
 		if err != nil {
-			return nil, 0, err
+			return nil, 0, errors.New("NoConnectionToDest")
 		}
 
 		for adj, isAdj := range g.adjMatrix[curVert] {

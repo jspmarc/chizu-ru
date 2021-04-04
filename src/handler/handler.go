@@ -61,12 +61,7 @@ func ProgramHandler(w http.ResponseWriter, r *http.Request) {
 
 // AStar format query: AStar?filePath=[filePath]&src=[src]&dest=[dest]
 func AStar(w http.ResponseWriter, r *http.Request) {
-	s := r.URL
-	u, err := url.Parse(s.String())
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
+	u := r.URL
 	m, _ := url.ParseQuery(u.RawQuery)
 
 	if len(m["filePath"]) == 0 || len(m["src"]) == 0 || len(m["dest"]) == 0 {
