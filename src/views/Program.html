@@ -14,11 +14,11 @@
     <meta name="generator" content="Nicepage 3.11.0, nicepage.com">
     <link id="u-theme-google-font" rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:100,100i,300,300i,400,400i,500,500i,700,700i,900,900i|Open+Sans:300,300i,400,400i,600,600i,700,700i,800,800i">
     <script type="application/ld+json">{
-		"@context": "http://schema.org",
-		"@type": "Organization",
-		"name": "",
-		"url": "index.html",
-		"logo": "images/Screenshot2021-04-04at5.17.47PM.png"
+      "@context": "http://schema.org",
+      "@type": "Organization",
+      "name": "",
+      "url": "index.html",
+      "logo": "images/Screenshot2021-04-04at5.17.47PM.png"
     }</script>
     <meta property="og:title" content="Program">
     <meta property="og:type" content="website">
@@ -48,7 +48,7 @@
           </div>
           <div class="u-custom-menu u-nav-container">
             <ul class="u-nav u-unstyled u-nav-1"><li class="u-nav-item"><a class="u-button-style u-nav-link u-text-active-palette-1-base u-text-hover-palette-2-base" href="index.html" style="padding: 10px 20px;">Home</a>
-            </li><li class="u-nav-item"><a class="u-button-style u-nav-link u-text-active-palette-1-base u-text-hover-palette-2-base" href="/Program" style="padding: 10px 20px;">Program</a>
+            </li><li class="u-nav-item"><a class="u-button-style u-nav-link u-text-active-palette-1-base u-text-hover-palette-2-base" href="/Program.html" style="padding: 10px 20px;">Program</a>
             </li></ul>
           </div>
           <div class="u-custom-menu u-nav-container-collapse">
@@ -64,6 +64,12 @@
           </div>
         </nav>
       </div></header>
+    <div>
+      <form method="POST" enctype="multipart/form-data">
+        <input type="file" name="file" id="fileInput" />
+        <input type="button" value="count distance!" id="countDistanceButton" />
+      </form>
+    </div>
     <section class="u-clearfix u-section-1" id="sec-3da1">
       <div id="mapid"></div>
     </section>
@@ -82,6 +88,7 @@
       </a>
     </section>
   </body>
+  <!--script buat leaflet-->
   <script>
     let mymap = L.map('mapid').setView([51.505, -0.09], 13);
     L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
@@ -92,5 +99,33 @@
       zoomOffset: -1,
       accessToken: 'pk.eyJ1IjoianNwbWFyYyIsImEiOiJja240YzYwYjIxbXp3Mm9vMnNvcHY4b3UzIn0.WXOFYC9W4gkCTDOQ7U282w',
     }).addTo(mymap);
+  </script>
+  <!--script buat render map dan handle upload -->
+  <script>
+    const fileInputForm = document.getElementById('fileInput');
+    const countDistanceButton = document.getElementById('countDistanceButton');
+
+    const AStar = async (fileContent, dest, src) => {
+      console.log(fileContent)
+      fetch(`/AStar?dest=${dest}&src=${src}`, {
+        method: 'POST',
+        body: fileContent
+      }).then(
+        resp => resp.json()
+      ).then(
+        resp => console.log(resp)
+      ).catch(
+        error => console.error(error)
+      );
+    };
+
+    fileInput.addEventListener('change', async (e) => {
+      console.log('file changed')
+    })
+
+    countDistanceButton.addEventListener('click', async () => {
+      const content = await fileInput.files[0].text()
+      AStar(content, 'Arad', 'Bucharest')
+    })
   </script>
 </html>

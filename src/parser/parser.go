@@ -18,6 +18,7 @@ import (
 	"bufio"
 	"chizu-ru/graph"
 	"chizu-ru/node"
+	"io"
 	"os"
 	"strconv"
 	"strings"
@@ -27,28 +28,8 @@ type vertex = node.Node
 
 // Parse fungsi untuk parsing file menjadi graf kemudian pointer graf akan
 // dikembalikan
-func Parse(pathToFile string) (*graph.Graph, error) {
-	//scanner := bufio.NewScanner(os.Stdin)
-	//scanner.Scan()
-	//input := scanner.Text()
-
-	//fnameBuffer := new(bytes.Buffer)
-	//fmt.Fprintf(fnameBuffer, "../test/%s", input)
-	//file, ferr := os.Open(fnameBuffer.String())
-
-	file, ferr := os.Open(pathToFile)
-
-	if ferr != nil {
-		return nil, ferr
-	}
-
-	scanner1 := bufio.NewScanner(file)
-	f := make([]string, 0)
-	for scanner1.Scan() {
-		line := scanner1.Text()
-		f = append(f, line)
-	}
-	defer file.Close()
+func Parse(fileContent string) (*graph.Graph, error) {
+	f := strings.Split(fileContent, "\n")
 
 	// buat nyimpen sudut yang udah dibuat, jadi tinggal tambah ke graf
 	nVertex, _ := strconv.Atoi(f[0])
@@ -60,7 +41,7 @@ func Parse(pathToFile string) (*graph.Graph, error) {
 		latitude, _ := strconv.ParseFloat(splitted[1], 64)
 		longitude, _ := strconv.ParseFloat(splitted[2], 64)
 
-		vertices[ctr - 1] = node.New(splitted[0], latitude, longitude)
+		vertices[ctr-1] = node.New(splitted[0], latitude, longitude)
 		ctr++
 	}
 
@@ -78,4 +59,26 @@ func Parse(pathToFile string) (*graph.Graph, error) {
 	}
 
 	return g, nil
+}
+
+func ParseFile(pathToFile string) (*graph.Graph, error) {
+	file, ferr := os.Open(pathToFile)
+	if ferr != nil {
+		return nil, ferr
+	}
+
+	scanner1 := bufio.NewScanner(file)
+	f := make([]string, 0)
+	for scanner1.Scan() {
+		line := scanner1.Text()
+		f = append(f, line)
+	}
+	defer file.Close()
+
+	content, err := io.ReadAll(file)
+	if err != nil {
+		return nil, err
+	}
+
+	return Parse(string(content))
 }

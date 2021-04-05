@@ -13,7 +13,7 @@ func main() {
 	fs := http.FileServer(http.Dir("./views"))
 	mux.Handle("/", http.StripPrefix("/", fs))
 	mux.HandleFunc("/AStar", handler.AStar)
-	mux.HandleFunc("/Program", handler.ProgramHandler)
+	mux.HandleFunc("/upload", handler.Upload)
 
 	handler := cors.Default().Handler(mux)
 	log.Println("Starting web port on 8080")
