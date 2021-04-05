@@ -65,7 +65,11 @@
         </nav>
       </div></header>
     <div>
-      <form method="POST" enctype="multipart/form-data">
+      <input type="button" id="changeSearch" />
+      <form id="bonus">
+        <input type="fromMap" value="get intersections!" id="getIntersectionsButton" />
+      </form>
+      <form method="POST" enctype="multipart/form-data" id="fromFile">
         <input type="file" name="file" id="fileInput" />
         <input type="button" value="count distance!" id="countDistanceButton" />
       </form>
@@ -91,31 +95,46 @@
   <!--script buat leaflet-->
   <script>
     // initial map state
-    // let leafletMap = L.map('mapid').setView([-6.8915, 107.6107], 13);
-    let leafletMap = L.map('mapid').setView([45.691, 21.903], 13);
+    // [[lat, long], depth]
+    let mapPosition = [[-6.8915, 107.6107], 13]
+    let leafletMap = L.map('mapid').setView(mapPosition[0], mapPosition[1]);
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(leafletMap);
 
-    const markNodeInMap = (nodeInfo) => {
-      const circle = L.circle([nodeInfo.lat, nodeInfo.long], {
-        color: 'red',
-        fillOpacity: 0.5,
-        radius: 500,
-      }).addTo(leafletMap);
+    let nodeMarks = L.layerGroup(); // circle
+    const markNodesInMap = (nodes) => {
+      // hapus markers yang udah adad
+      nodeMarks.clearLayers();
+      // mark nodes satu per satu
+      nodes.forEach(nodeInfo => {
+        const circle = L.circle([nodeInfo.lat, nodeInfo.long], {
+          color: 'red',
+          fillOpacity: 0.5,
+          radius: 500,
+        }).addTo(nodeMarks);
 
-      circle.bindPopup(nodeInfo.name);
+        // bikin bisa popup lalu tunjukin nama
+        circle.bindPopup(nodeInfo.name);
+      })
+
+      // tambahin semua marker node ke map
+      nodeMarks.addTo(leafletMap);
     }
 
+    let polyline = L.polyline([]);
     const createPolylineFromNodes = (nodes) => {
+      polyline.remove();
+      // bikin array of latitude and longitude kosong
       let latLongs = [];
+      // isi array
       nodes.forEach(node => {
         latLongs.push([node.Latitude, node.Longitude])
       });
-      console.log(latLongs);
 
-      let polyline = L.polyline(latLongs, {
+      // gambar polyline
+      polyline = L.polyline(latLongs, {
         color: 'blue',
       }).addTo(leafletMap);
       leafletMap.fitBounds(polyline.getBounds());
@@ -163,17 +182,28 @@
 
     let content;
     fileInput.addEventListener('change', async (e) => {
+      // remove nodeMarks dan polyline dari map
+      nodeMarks.clearLayers();
+      polyline.remove();
+
       content = await fileInput.files[0].text();
+      // parse input
       const nodes = parseFile(content);
-      nodes.forEach(node => {
-        markNodeInMap(node);
-      });
+      // ubah posisi map ke node pertama di file
+      mapPosition = [[nodes[0].lat, nodes[0].long], 13]
+      leafletMap.setView(mapPosition[0], mapPosition[1]);
+      // tandain node di map
+      markNodesInMap(nodes);
     })
 
     countDistanceButton.addEventListener('click', async () => {
-      const content = await fileInput.files[0].text();
+      // run A*
       const res = await AStar(content, 'Arad', 'Bucharest');
+      // gambar sisi
       createPolylineFromNodes(res.Nodes);
     })
+  </script>
+  <!--Bonus-->
+  <script>
   </script>
 </html>
