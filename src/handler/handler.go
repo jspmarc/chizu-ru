@@ -27,7 +27,6 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 		http.NotFound(w, r)
 		return
 	}
-	// w.Write([]byte("Welcome to Chizu-ru"))
 	tmpl, err := template.ParseFiles(path.Join("views", "Home.html"))
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)

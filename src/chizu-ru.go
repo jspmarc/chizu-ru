@@ -10,6 +10,8 @@ import (
 
 func main() {
 	mux := http.NewServeMux()
+	fs := http.FileServer(http.Dir("./views"))
+	mux.Handle("/", http.StripPrefix("/", fs))
 	mux.HandleFunc("/AStar", handler.AStar)
 	mux.HandleFunc("/Program", handler.ProgramHandler)
 
