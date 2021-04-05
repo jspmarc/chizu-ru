@@ -4,10 +4,8 @@ import (
 	"chizu-ru/graph"
 	"chizu-ru/parser"
 	"encoding/json"
-	"fmt"
 	"html/template"
 	"io"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"net/url"
@@ -41,51 +39,6 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-
-}
-
-func Upload(w http.ResponseWriter, r *http.Request) {
-	log.Println("/upload endpoint hit")
-	if r.Method != "POST" {
-		http.Error(w, "Request must be a POST method", http.StatusBadRequest)
-		log.Println("Request not POST")
-		return
-	}
-
-	// FormFile returns the first file for the given key `myFile`
-	// it also returns the FileHeader so we can get the Filename,
-	// the Header and the size of the file
-	file, handler, err := r.FormFile("file")
-	if err != nil {
-		log.Println("Error Retrieving the File")
-		log.Println(err)
-		return
-	}
-	defer file.Close()
-	log.Printf("Uploaded File: %+v\n", handler.Filename)
-	log.Printf("File Size: %+v\n", handler.Size)
-	log.Printf("MIME Header: %+v\n", handler.Header)
-
-	// Create a temporary file within our temp-images directory that follows
-	// a particular naming pattern
-	tempFile, err := ioutil.TempFile("uploaded", handler.Filename+".txt")
-	if err != nil {
-		log.Println(err)
-	}
-	defer tempFile.Close()
-
-	// read all of the contents of our uploaded file into a
-	// byte array
-	fileBytes, err := ioutil.ReadAll(file)
-	if err != nil {
-		log.Println(err)
-	}
-	// write this byte array to our temporary file
-	tempFile.Write(fileBytes)
-	fmt.Fprint(w, fileBytes)
-	g, _ := parser.Parse("uploaded/" + handler.Filename + ".txt")
-	g.Print()
-	log.Println("File" + handler.Filename + ".txt uploaded")
 }
 
 // AStar format query: AStar?filePath=[filePath]&src=[src]&dest=[dest]

@@ -90,42 +90,90 @@
   </body>
   <!--script buat leaflet-->
   <script>
-    let mymap = L.map('mapid').setView([51.505, -0.09], 13);
-    L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
-      attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
-      maxZoom: 18,
-      id: 'mapbox/streets-v11',
-      tileSize: 512,
-      zoomOffset: -1,
-      accessToken: 'pk.eyJ1IjoianNwbWFyYyIsImEiOiJja240YzYwYjIxbXp3Mm9vMnNvcHY4b3UzIn0.WXOFYC9W4gkCTDOQ7U282w',
-    }).addTo(mymap);
+    // initial map state
+    // let leafletMap = L.map('mapid').setView([-6.8915, 107.6107], 13);
+    let leafletMap = L.map('mapid').setView([45.691, 21.903], 13);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(leafletMap);
+
+    const markNodeInMap = (nodeInfo) => {
+      const circle = L.circle([nodeInfo.lat, nodeInfo.long], {
+        color: 'red',
+        fillOpacity: 0.5,
+        radius: 500,
+      }).addTo(leafletMap);
+
+      circle.bindPopup(nodeInfo.name);
+    }
+
+    const createPolylineFromNodes = (nodes) => {
+      let latLongs = [];
+      nodes.forEach(node => {
+        latLongs.push([node.Latitude, node.Longitude])
+      });
+      console.log(latLongs);
+
+      let polyline = L.polyline(latLongs, {
+        color: 'blue',
+      }).addTo(leafletMap);
+      leafletMap.fitBounds(polyline.getBounds());
+    }
   </script>
   <!--script buat render map dan handle upload -->
   <script>
     const fileInputForm = document.getElementById('fileInput');
     const countDistanceButton = document.getElementById('countDistanceButton');
 
+    const parseFile = (fileContent) => {
+      fileContent = fileContent.split("\n");
+      const nodeCount = parseInt(fileContent[0])
+
+      let parseResult = [];
+      for (let i = 1; i <= nodeCount; ++i) {
+        fileContent[i] = fileContent[i].split(",");
+        let parseLineResult = {
+          name: fileContent[i][0],
+          lat: parseFloat(fileContent[i][1]),
+          long: parseFloat(fileContent[i][2]),
+        };
+
+        parseResult.push(parseLineResult);
+      }
+
+      return parseResult;
+    };
+
     const AStar = async (fileContent, dest, src) => {
-      console.log(fileContent)
-      fetch(`/AStar?dest=${dest}&src=${src}`, {
+      let ret;
+      await fetch(`/AStar?dest=${dest}&src=${src}`, {
         method: 'POST',
         body: fileContent
       }).then(
         resp => resp.json()
       ).then(
-        resp => console.log(resp)
+        resp => ret = resp
       ).catch(
         error => console.error(error)
       );
+
+      return ret;
     };
 
+    let content;
     fileInput.addEventListener('change', async (e) => {
-      console.log('file changed')
+      content = await fileInput.files[0].text();
+      const nodes = parseFile(content);
+      nodes.forEach(node => {
+        markNodeInMap(node);
+      });
     })
 
     countDistanceButton.addEventListener('click', async () => {
-      const content = await fileInput.files[0].text()
-      AStar(content, 'Arad', 'Bucharest')
+      const content = await fileInput.files[0].text();
+      const res = await AStar(content, 'Arad', 'Bucharest');
+      createPolylineFromNodes(res.Nodes);
     })
   </script>
 </html>

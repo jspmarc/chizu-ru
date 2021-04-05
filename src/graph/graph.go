@@ -142,5 +142,10 @@ func (g *Graph) AStar(src string, dest string) ([]*vertex, float64, error) {
 		curVert = prevVert
 	}
 
+	// reverse result graph
+	for i, j := 0, len(ret)-1; i < j; i, j = i+1, j-1 {
+		ret[i], ret[j] = ret[j], ret[i]
+	}
+
 	return ret, vertCostFromSrc[destVert], nil
 }
