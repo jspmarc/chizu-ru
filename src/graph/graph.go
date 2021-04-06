@@ -6,6 +6,7 @@ import (
 	"chizu-ru/prioqueue"
 	"errors"
 	"fmt"
+	//"time"
 )
 
 type vertex = node.Node
@@ -125,7 +126,9 @@ func (g *Graph) AStar(src string, dest string) ([]*vertex, float64, error) {
 				// hitung fn
 				fn = gn + hn
 
-				if toVisit.ContainsLEQ(adj, fn) {
+				// ga usah dimasukin kalo udah ada di queue dengan cost lebih
+				// kecil atau jarak dari src lebih kecil dari gn yang dihitung
+				if toVisit.ContainsLEQ(adj, fn) || gn > vertCostFromSrc[adj] {
 					continue
 				}
 

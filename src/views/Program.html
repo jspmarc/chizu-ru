@@ -75,7 +75,7 @@
       </form>
     </div>
     <div style="margin: 0px 10px;">
-      Jarak: <span id="jarak">0</span>km
+      Jarak: <span id="jarak"></span>km
     </div>
     <div style="margin: 0px 10px;">
       <p>Asal: <span id="srcNode"></span></p>
@@ -210,6 +210,9 @@
       leafletMap.setView(mapPosition[0], mapPosition[1]);
       // tandain node di map
       markNodesInMap(nodes);
+      document.getElementById("jarak").textContent = "";
+      document.getElementById("srcNode").textContent = "";
+      document.getElementById("destNode").textContent = "";
     })
 
     countDistanceButton.addEventListener('click', async () => {
