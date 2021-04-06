@@ -74,30 +74,15 @@
         <input type="button" value="count distance!" id="countDistanceButton" />
       </form>
     </div>
-    <div style="margin: 0px 10px;">
-      Jarak: <span id="jarak"></span>km
-    </div>
-    <div style="margin: 0px 10px;">
-      <p>Asal: <span id="srcNode"></span></p>
-      <p>Tujuan: <span id="destNode"></span></p>
+    <div style="margin: 0 1em;">
+      Jarak: <span id="jarak"></span>km<span style="padding: 0 1em;">Asal: <span id="srcNode"></span></span><span style="padding: 0 1em;">Tujuan: <span id="destNode"></span></span>
     </div>
     <section class="u-clearfix u-section-1" id="sec-3da1">
-      <div id="mapid"></div>
+      <div id="mapid" style="height: 610px;"></div>
     </section>
-    <footer class="u-align-center u-clearfix u-footer u-grey-80 u-footer" id="sec-56a0"><div class="u-clearfix u-sheet u-sheet-1">
+    <!-- <footer class="u-align-center u-clearfix u-footer u-grey-80 u-footer" id="sec-56a0"><div class="u-clearfix u-sheet u-sheet-1">
         <p class="u-small-text u-text u-text-variant u-text-1">Sample text. Click to select the text box. Click again or double click to start editing the text.</p>
-      </div></footer>
-    <section class="u-backlink u-clearfix u-grey-80">
-      <a class="u-link" href="https://nicepage.com/website-templates" target="_blank">
-        <span>Website Templates</span>
-      </a>
-      <p class="u-text">
-        <span>created with</span>
-      </p>
-      <a class="u-link" href="https://nicepage.com/" target="_blank">
-        <span>Website Builder Software</span>
-      </a>
-    </section>
+      </div></footer> -->
   </body>
   <!--script buat leaflet-->
   <script>
@@ -160,7 +145,7 @@
   <script>
     const fileInputForm = document.getElementById('fileInput');
     const countDistanceButton = document.getElementById('countDistanceButton');
-    let destNode, srcNode, chooseSrc = true;
+    let destNode = "", srcNode = "", chooseSrc = true;
 
     const parseFile = (fileContent) => {
       fileContent = fileContent.split("\n");
@@ -217,12 +202,24 @@
 
     countDistanceButton.addEventListener('click', async () => {
       // run A*
-      // nconst res = await AStar(content, "Arad", "Iasi");
-      const res = await AStar(content, srcNode, destNode);
-      // gambar sisi
-      createPolylineFromNodes(res.Nodes);
-      console.log(res);
-      document.getElementById("jarak").textContent = res.Distance;
+      if (srcNode === destNode) {
+        if (srcNode === "") {
+          alert("Belum ada sudut dipilih.")
+        } else {
+          document.getElementById("jarak").textContent = 0.00;
+        }
+      } else {
+        const res = await AStar(content, srcNode, destNode);
+        // gambar sisi
+        if (res.Nodes === null) {
+          alert(`Tidak ada jalan dari ${destNode} ke ${srcNode}`);
+          res.Distance = "NaN ";
+        } else {
+          createPolylineFromNodes(res.Nodes);
+          res.Distance = parseFloat(res.Distance).toFixed(2);
+        }
+        document.getElementById("jarak").textContent = res.Distance;
+      }
     })
 
     const addSrcDest = (marker) => {
