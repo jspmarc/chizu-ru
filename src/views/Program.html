@@ -66,8 +66,9 @@
       </div></header>
     <div>
       <input type="button" value="Change mode" id="toggleModeButton" onclick="changeMode()" />
+      <input type="button" value="Reset map position" id="resetMapPositionButton" onclick="resetMapPosition()" />
       <form id="fromMap">
-        <input type="button" value="get intersections!" id="getIntersectionsButton" />
+        <input type="button" value="Build graph" id="buildGraphButton" onclick="buildGraph()" />
       </form>
       <form method="POST" enctype="multipart/form-data" id="fromFile">
         <input type="file" name="file" id="fileInput" />
@@ -75,14 +76,11 @@
       </form>
     </div>
     <div style="margin: 0 1em;">
-      Jarak: <span id="jarak"></span>km<span style="padding: 0 1em;">Asal: <span id="srcNode"></span></span><span style="padding: 0 1em;">Tujuan: <span id="destNode"></span></span>
+      <b>Jarak:</b> <span id="jarak"></span>km<span style="padding: 0 1em;"><b>Asal:</b> <span id="srcNode"></span></span><span style="padding: 0 1em;"><b>Tujuan:</b> <span id="destNode"></span></span>
     </div>
     <section class="u-clearfix u-section-1" id="sec-3da1">
       <div id="mapid" style="height: 610px;"></div>
     </section>
-    <!-- <footer class="u-align-center u-clearfix u-footer u-grey-80 u-footer" id="sec-56a0"><div class="u-clearfix u-sheet u-sheet-1">
-        <p class="u-small-text u-text u-text-variant u-text-1">Sample text. Click to select the text box. Click again or double click to start editing the text.</p>
-      </div></footer> -->
   </body>
   <!--script buat leaflet-->
   <script>
@@ -140,6 +138,11 @@
       polyline.remove();
       nodeMarks.clearLayers();
     };
+
+    const resetMapPosition = () => {
+      // clearMap();
+      leafletMap.setView(mapPosition[0], mapPosition[1]);
+    }
   </script>
   <!--script buat render map dan handle upload -->
   <script>
@@ -202,6 +205,7 @@
 
     countDistanceButton.addEventListener('click', async () => {
       // run A*
+      polyline.remove();
       if (srcNode === destNode) {
         if (srcNode === "") {
           alert("Belum ada sudut dipilih.")
@@ -254,7 +258,12 @@
       }
     };
 
-    const getIntersectionsQuery = (south, west, north, east) => {
+    const buildGraph = () => {
+      alert('Not yet implemented');
+    };
+
+    /*
+    const getIntersections = async (south, west, north, east) => {
       const query = `
 [out:json][timeout:200][bbox:${south},${west},${north},${east}];
 way[highway]->.relevant_ways;
@@ -267,17 +276,25 @@ foreach.relevant_ways->.this_way{
   (node.linked_ways_only_nodes.this_way_nodes;.this_way;);
   out skel qt;
  }`;
+
+      const link = 'https://overpass.kumi.systems/api?data=';
+
+      await fetch(link + query).then(
+        resp => resp.json()
+      ).then(
+        resp => console.log(resp)
+      ).catch(
+        err => console.error(err)
+      );
     };
 
-    // function buildOverpassApiUrl(map, overpassQuery) {
-    //   const bounds = map.getBounds().getSouth() + ',' + map.getBounds().getWest() + ',' + map.getBounds().getNorth() + ',' + map.getBounds().getEast();
-    //   const nodeQuery = 'node[' + overpassQuery + '](' + bounds + ');';
-    //   const wayQuery = 'way[' + overpassQuery + '](' + bounds + ');';
-    //   const relationQuery = 'relation[' + overpassQuery + '](' + bounds + ');';
-    //   const query = '?data=[out:json][timeout:15];(' + nodeQuery + wayQuery + relationQuery + ');out body geom;';
-    //   const baseUrl = 'http://overpass-api.de/api/interpreter';
-    //   const resultUrl = baseUrl + query;
-    //   return resultUrl;
-    // }
+    const getIntersectionsButton = document.getElementById("getIntersectionsButton");
+    getIntersectionsButton.addEventListener('click', () => {
+      getIntersections(leafletMap.getBounds().getSouth(),
+                       leafletMap.getBounds().getWest(),
+                       leafletMap.getBounds().getNorth(),
+                       leafletMap.getBounds().getEast());
+    });
+    */
   </script>
 </html>
