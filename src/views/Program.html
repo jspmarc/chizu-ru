@@ -74,6 +74,13 @@
         <input type="button" value="count distance!" id="countDistanceButton" />
       </form>
     </div>
+    <div style="margin: 0px 10px;">
+      Jarak: <span id="jarak">0</span>km
+    </div>
+    <div style="margin: 0px 10px;">
+      <p>Asal: <span id="srcNode"></span></p>
+      <p>Tujuan: <span id="destNode"></span></p>
+    </div>
     <section class="u-clearfix u-section-1" id="sec-3da1">
       <div id="mapid"></div>
     </section>
@@ -109,21 +116,25 @@
       nodeMarks.clearLayers();
       // mark nodes satu per satu
       nodes.forEach(nodeInfo => {
-        const circle = L.circle([nodeInfo.lat, nodeInfo.long], {
+        const marker = L.circleMarker([nodeInfo.lat, nodeInfo.long], {
           color: 'red',
           fillOpacity: 0.5,
-          radius: 50,
+          radius: 10,
         }).addTo(nodeMarks);
 
-        // bikin bisa popup lalu tunjukin nama
-        circle.bindPopup(nodeInfo.name);
+        // bikin bisa tooltip yang nunjukin nama
+        marker.bindTooltip(nodeInfo.name);
+        // marker.bindPopup(nodeInfo.name);
+        marker.on('click', () => addSrcDest(marker));
       })
 
       // tambahin semua marker node ke map
       nodeMarks.addTo(leafletMap);
     }
 
-    let polyline = L.polyline([]);
+
+    // fungsi buat bikin sisi antar peta
+    let polyline = L.polyline([]); // polyline kosong
     const createPolylineFromNodes = (nodes) => {
       polyline.remove();
       // bikin array of latitude and longitude kosong
@@ -149,6 +160,7 @@
   <script>
     const fileInputForm = document.getElementById('fileInput');
     const countDistanceButton = document.getElementById('countDistanceButton');
+    let destNode, srcNode, chooseSrc = true;
 
     const parseFile = (fileContent) => {
       fileContent = fileContent.split("\n");
@@ -202,10 +214,29 @@
 
     countDistanceButton.addEventListener('click', async () => {
       // run A*
-      const res = await AStar(content, 'Arad', 'Bucharest');
+      const res = await AStar(content, srcNode, destNode);
       // gambar sisi
       createPolylineFromNodes(res.Nodes);
+      console.log(res);
+      document.getElementById("jarak").textContent = res.Distance;
     })
+
+    const addSrcDest = (marker) => {
+      const markerName = marker._tooltip._content;
+      if (chooseSrc) {
+        srcNode = markerName;
+        const popup = marker.bindPopup(markerName + " (asal)");
+        document.getElementById("srcNode").textContent = markerName;
+        popup.openPopup();
+      } else {
+        destNode = markerName;
+        const popup = marker.bindPopup(markerName + " (tujuan)");
+        document.getElementById("destNode").textContent = markerName;
+        popup.openPopup();
+      }
+
+      chooseSrc = !chooseSrc;
+    }
   </script>
   <!--Bonus-->
   <script>
