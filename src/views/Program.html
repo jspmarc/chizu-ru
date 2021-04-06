@@ -153,6 +153,13 @@
     const parseFile = (fileContent) => {
       fileContent = fileContent.split("\n");
       const nodeCount = parseInt(fileContent[0])
+      if (Number.isNaN(nodeCount)) {
+        alert("Format file salah")
+        return;
+      } else if (nodeCount === 0) {
+        alert("Tidak ada node di input");
+        return
+      }
 
       let parseResult = [];
       for (let i = 1; i <= nodeCount; ++i) {
