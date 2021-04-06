@@ -65,9 +65,9 @@
         </nav>
       </div></header>
     <div>
-      <input type="button" id="changeSearch" />
-      <form id="bonus">
-        <input type="fromMap" value="get intersections!" id="getIntersectionsButton" />
+      <input type="button" value="Change mode" id="toggleModeButton" onclick="changeMode()" />
+      <form id="fromMap">
+        <input type="button" value="get intersections!" id="getIntersectionsButton" />
       </form>
       <form method="POST" enctype="multipart/form-data" id="fromFile">
         <input type="file" name="file" id="fileInput" />
@@ -112,7 +112,7 @@
         const circle = L.circle([nodeInfo.lat, nodeInfo.long], {
           color: 'red',
           fillOpacity: 0.5,
-          radius: 500,
+          radius: 50,
         }).addTo(nodeMarks);
 
         // bikin bisa popup lalu tunjukin nama
@@ -139,6 +139,11 @@
       }).addTo(leafletMap);
       leafletMap.fitBounds(polyline.getBounds());
     }
+
+    const clearMap = () => {
+      polyline.remove();
+      nodeMarks.clearLayers();
+    };
   </script>
   <!--script buat render map dan handle upload -->
   <script>
@@ -183,8 +188,7 @@
     let content;
     fileInput.addEventListener('change', async (e) => {
       // remove nodeMarks dan polyline dari map
-      nodeMarks.clearLayers();
-      polyline.remove();
+      clearMap();
 
       content = await fileInput.files[0].text();
       // parse input
@@ -205,5 +209,43 @@
   </script>
   <!--Bonus-->
   <script>
+    let fromFile = true;
+    document.getElementById("fromMap").style.display = "none";
+    const changeMode = () => {
+      fromFile = !fromFile;
+      if (fromFile) {
+        document.getElementById("fromMap").style.display = "none";
+        document.getElementById("fromFile").style.display = "";
+      } else {
+        document.getElementById("fromFile").style.display = "none";
+        document.getElementById("fromMap").style.display = "";
+      }
+    };
+
+    const getIntersectionsQuery = (south, west, north, east) => {
+      const query = `
+[out:json][timeout:200][bbox:${south},${west},${north},${east}];
+way[highway]->.relevant_ways;
+foreach.relevant_ways->.this_way{
+  .this_way > ->.this_way_nodes;
+  .this_way_nodes < ->.linked_ways;
+  way.linked_ways[highway]->.linked_ways;
+  (.linked_ways; - .this_way;)->.linked_ways_only;
+  .linked_ways_only > ->.linked_ways_only_nodes;
+  (node.linked_ways_only_nodes.this_way_nodes;.this_way;);
+  out skel qt;
+ }`;
+    };
+
+    // function buildOverpassApiUrl(map, overpassQuery) {
+    //   const bounds = map.getBounds().getSouth() + ',' + map.getBounds().getWest() + ',' + map.getBounds().getNorth() + ',' + map.getBounds().getEast();
+    //   const nodeQuery = 'node[' + overpassQuery + '](' + bounds + ');';
+    //   const wayQuery = 'way[' + overpassQuery + '](' + bounds + ');';
+    //   const relationQuery = 'relation[' + overpassQuery + '](' + bounds + ');';
+    //   const query = '?data=[out:json][timeout:15];(' + nodeQuery + wayQuery + relationQuery + ');out body geom;';
+    //   const baseUrl = 'http://overpass-api.de/api/interpreter';
+    //   const resultUrl = baseUrl + query;
+    //   return resultUrl;
+    // }
   </script>
 </html>
