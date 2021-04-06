@@ -15,7 +15,6 @@
 package parser
 
 import (
-	"bufio"
 	"chizu-ru/graph"
 	"chizu-ru/node"
 	"io"
@@ -66,14 +65,6 @@ func ParseFile(pathToFile string) (*graph.Graph, error) {
 	if ferr != nil {
 		return nil, ferr
 	}
-
-	scanner1 := bufio.NewScanner(file)
-	f := make([]string, 0)
-	for scanner1.Scan() {
-		line := scanner1.Text()
-		f = append(f, line)
-	}
-	defer file.Close()
 
 	content, err := io.ReadAll(file)
 	if err != nil {

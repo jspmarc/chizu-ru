@@ -214,6 +214,7 @@
 
     countDistanceButton.addEventListener('click', async () => {
       // run A*
+      // nconst res = await AStar(content, "Arad", "Iasi");
       const res = await AStar(content, srcNode, destNode);
       // gambar sisi
       createPolylineFromNodes(res.Nodes);
